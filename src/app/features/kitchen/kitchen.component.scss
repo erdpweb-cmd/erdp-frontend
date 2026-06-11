@@ -1,0 +1,226 @@
+@use 'variables' as *;
+
+.kitchen-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.kitchen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-left {
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $chocolate;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: $gray;
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+// Orders Grid
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: white;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  box-shadow: $shadow-card;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &.time-normal {
+    border-color: rgba($success, 0.3);
+  }
+
+  &.time-warning {
+    border-color: rgba($warning, 0.5);
+    background: rgba($warning, 0.02);
+  }
+
+  &.time-danger {
+    border-color: rgba($danger, 0.5);
+    background: rgba($danger, 0.02);
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: $shadow-card; }
+  50% { box-shadow: 0 0 15px rgba($danger, 0.3); }
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.order-number {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $chocolate;
+  }
+}
+
+.order-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  i {
+    color: $orange;
+  }
+}
+
+.order-customer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background: $cream;
+  border-radius: $radius-sm;
+  font-size: 0.875rem;
+  color: $chocolate;
+
+  i {
+    color: $gray;
+  }
+}
+
+.order-items {
+  margin: 1rem 0;
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .item-qty {
+      background: $orange;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: $radius-sm;
+      font-size: 0.75rem;
+      font-weight: 700;
+      min-width: 2rem;
+      text-align: center;
+    }
+
+    .item-name {
+      font-weight: 500;
+      color: $chocolate;
+    }
+  }
+}
+
+.order-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba($info, 0.1);
+  border-radius: $radius-sm;
+  font-size: 0.875rem;
+  color: $info;
+  margin: 1rem 0;
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+}
+
+.order-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+
+  button {
+    width: 100%;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+
+  i {
+    font-size: 4rem;
+    color: $gray;
+    opacity: 0.5;
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $chocolate;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    color: $gray;
+    margin: 0;
+  }
+}
+
+// Time classes for text
+.time-normal {
+  color: $success;
+}
+
+.time-warning {
+  color: $warning;
+}
+
+.time-danger {
+  color: $danger;
+}
+
+// Responsive
+@media (max-width: $breakpoint-md) {
+  .orders-grid {
+    grid-template-columns: 1fr;
+  }
+}

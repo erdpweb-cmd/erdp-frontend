@@ -1,0 +1,138 @@
+<div class="layout-wrapper" [class.sidebar-collapsed]="sidebarCollapsed">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <img src="assets/images/logo-principal.webp" alt="Logo" class="logo" *ngIf="!sidebarCollapsed">
+      <img src="assets/images/logo-principal.webp" alt="Logo" class="logo-small" *ngIf="sidebarCollapsed">
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <i class="pi pi-home"></i>
+        <span *ngIf="!sidebarCollapsed">Dashboard</span>
+      </a>
+
+      <a routerLink="/business" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="pi pi-building"></i>
+        <span *ngIf="!sidebarCollapsed">Negocio</span>
+      </a>
+
+      <a routerLink="/counter" routerLinkActive="active" class="nav-item">
+        <i class="pi pi-desktop"></i>
+        <span *ngIf="!sidebarCollapsed">Barra</span>
+      </a>
+
+      <a routerLink="/kitchen" routerLinkActive="active" class="nav-item">
+        <i class="pi pi-fire"></i>
+        <span *ngIf="!sidebarCollapsed">Cocina</span>
+      </a>
+
+      <a routerLink="/products" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="pi pi-box"></i>
+        <span *ngIf="!sidebarCollapsed">Productos</span>
+      </a>
+
+      <a routerLink="/inventory" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="pi pi-warehouse"></i>
+        <span *ngIf="!sidebarCollapsed">Inventario</span>
+      </a>
+
+      <a routerLink="/promotions" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="pi pi-tag"></i>
+        <span *ngIf="!sidebarCollapsed">Promociones</span>
+      </a>
+
+      <a routerLink="/staff" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="pi pi-users"></i>
+        <span *ngIf="!sidebarCollapsed">Personal</span>
+      </a>
+
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="pi pi-chart-bar"></i>
+        <span *ngIf="!sidebarCollapsed">Reportes</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button pButton icon="pi pi-angle-double-left" class="p-button-text toggle-btn"
+        [icon]="sidebarCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
+        (click)="sidebarCollapsed = !sidebarCollapsed"></button>
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar (Drawer) -->
+  <p-drawer [(visible)]="mobileSidebarVisible" [showCloseIcon]="true" position="left">
+    <ng-template pTemplate="header">
+      <img src="assets/images/logo-principal.webp" alt="Logo" class="mobile-logo">
+    </ng-template>
+    <nav class="mobile-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-home"></i>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/business" routerLinkActive="active" class="nav-item" *ngIf="isAdmin" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-building"></i>
+        <span>Negocio</span>
+      </a>
+      <a routerLink="/counter" routerLinkActive="active" class="nav-item" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-desktop"></i>
+        <span>Barra</span>
+      </a>
+      <a routerLink="/kitchen" routerLinkActive="active" class="nav-item" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-fire"></i>
+        <span>Cocina</span>
+      </a>
+      <a routerLink="/products" routerLinkActive="active" class="nav-item" *ngIf="isAdmin" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-box"></i>
+        <span>Productos</span>
+      </a>
+      <a routerLink="/inventory" routerLinkActive="active" class="nav-item" *ngIf="isAdmin" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-warehouse"></i>
+        <span>Inventario</span>
+      </a>
+      <a routerLink="/promotions" routerLinkActive="active" class="nav-item" *ngIf="isAdmin" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-tag"></i>
+        <span>Promociones</span>
+      </a>
+      <a routerLink="/staff" routerLinkActive="active" class="nav-item" *ngIf="isAdmin" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-users"></i>
+        <span>Personal</span>
+      </a>
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item" *ngIf="isAdmin" (click)="mobileSidebarVisible = false">
+        <i class="pi pi-chart-bar"></i>
+        <span>Reportes</span>
+      </a>
+    </nav>
+  </p-drawer>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-left">
+        <button pButton icon="pi pi-bars" class="p-button-text mobile-menu-btn"
+          (click)="mobileSidebarVisible = true"></button>
+        <h1 class="page-title">{{ getPageTitle() }}</h1>
+      </div>
+      <div class="header-right">
+        <div class="user-info">
+          <p-avatar [label]="user?.displayName?.charAt(0) || 'U'" shape="circle"></p-avatar>
+          <div class="user-details">
+            <span class="user-name">{{ user?.displayName }}</span>
+            <span class="user-role">{{ user?.role === 'admin' ? 'Administrador' : 'Colaborador' }}</span>
+          </div>
+        </div>
+        <button pButton icon="pi pi-sign-out" class="p-button-text p-button-danger" (click)="logout()"
+          pTooltip="Cerrar sesión"></button>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<p-toast></p-toast>
+

@@ -1,0 +1,121 @@
+<div class="products-container">
+  <div class="page-header">
+    <div>
+      <h1>Productos</h1>
+      <p class="subtitle">Gestión de productos y precios</p>
+    </div>
+  </div>
+
+  <p-toolbar>
+    <ng-template #start>
+      <div class="toolbar-left">
+        <button pButton label="Nuevo Producto" icon="pi pi-plus" (click)="openDialog()"></button>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="toolbar-right">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText [(ngModel)]="searchText" placeholder="Buscar..." />
+        </span>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <div class="products-table">
+    <p-table [value]="filteredProducts" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25]">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+          <th pSortableColumn="type">Tipo <p-sortIcon field="type"></p-sortIcon></th>
+          <th>Categoría</th>
+          <th pSortableColumn="productionCost">Costo <p-sortIcon field="productionCost"></p-sortIcon></th>
+          <th pSortableColumn="publicPrice">Precio <p-sortIcon field="publicPrice"></p-sortIcon></th>
+          <th pSortableColumn="profit">Ganancia <p-sortIcon field="profit"></p-sortIcon></th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>
+            <p-tag [value]="product.type" [severity]="product.type === 'bebida' ? 'info' : 'success'"></p-tag>
+          </td>
+          <td>{{ product.category || '-' }}</td>
+          <td>{{ product.productionCost | currency:'COP':'symbol':'1.0-0' }}</td>
+          <td>{{ product.publicPrice | currency:'COP':'symbol':'1.0-0' }}</td>
+          <td class="profit-cell">
+            {{ product.profit | currency:'COP':'symbol':'1.0-0' }}
+            <span class="profit-percentage">({{ product.profitPercentage }}%)</span>
+          </td>
+          <td>
+            <p-tag [value]="product.isActive ? 'Activo' : 'Inactivo'"
+                   [severity]="product.isActive ? 'success' : 'secondary'"></p-tag>
+          </td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text"
+                    (click)="editProduct(product)" pTooltip="Editar"></button>
+            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+                    (click)="confirmDelete(product)" pTooltip="Eliminar"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center">No hay productos registrados</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Dialog for Add/Edit -->
+  <p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{ width: '600px' }"
+    [header]="isEdit ? 'Editar Producto' : 'Nuevo Producto'">
+    <form (ngSubmit)="saveProduct()" class="product-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Nombre *</label>
+          <input id="name" name="name" pInputText [(ngModel)]="product.name" placeholder="Nombre del producto" required />
+        </div>
+        <div class="form-group">
+          <label for="type">Tipo *</label>
+          <p-select id="type" name="type" [options]="productTypes" [(ngModel)]="product.type"
+            placeholder="Seleccionar tipo"></p-select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Categoría</label>
+        <input id="category" name="category" pInputText [(ngModel)]="product.category" placeholder="Ej: Perros, Hamburguesas" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="productionCost">Costo de Producción *</label>
+          <p-inputNumber id="productionCost" name="productionCost" [(ngModel)]="product.productionCost"
+                         [min]="0" mode="currency" currency="COP" required></p-inputNumber>
+        </div>
+        <div class="form-group">
+          <label for="publicPrice">Precio Público *</label>
+          <p-inputNumber id="publicPrice" name="publicPrice" [(ngModel)]="product.publicPrice"
+                         [min]="0" mode="currency" currency="COP" required></p-inputNumber>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="isActive">Estado</label>
+        <p-select id="isActive" name="isActive" [options]="statusOptions" [(ngModel)]="product.isActive"></p-select>
+      </div>
+
+      <div class="dialog-footer">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="displayDialog = false"></button>
+        <button pButton type="submit" label="Guardar" [disabled]="!isFormValid()"></button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>
+

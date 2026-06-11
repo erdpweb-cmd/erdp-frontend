@@ -1,0 +1,103 @@
+<div class="login-wrapper">
+  <!-- Decorative background elements -->
+  <div class="bg-decoration">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+  </div>
+
+  <div class="login-container">
+    <!-- Left side - Branding -->
+    <div class="branding-side">
+      <div class="branding-content">
+        <img src="assets/images/logo-principal.webp" alt="El Rincón de los Perritos" class="logo" />
+        <h1 class="brand-title">El Rincón de los Perritos</h1>
+        <p class="brand-slogan">Donde cada mordisco es una cola de felicidad</p>
+        <div class="brand-features">
+          <div class="feature">
+            <i class="pi pi-check-circle"></i>
+            <span>Gestión de pedidos en tiempo real</span>
+          </div>
+          <div class="feature">
+            <i class="pi pi-check-circle"></i>
+            <span>Control de inventario inteligente</span>
+          </div>
+          <div class="feature">
+            <i class="pi pi-check-circle"></i>
+            <span>Reportes detallados</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side - Login Form -->
+    <div class="form-side">
+      <div class="login-card">
+        <div class="login-header">
+          <img src="assets/images/logo-principal.webp" alt="Logo" class="logo-mobile" />
+          <h2>¡Bienvenido!</h2>
+          <p>Ingresa tus credenciales para continuar</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <div class="form-field">
+            <label for="email">
+              <i class="pi pi-envelope"></i>
+              Correo Electrónico
+            </label>
+            <div class="input-wrapper">
+              <input
+                id="email"
+                type="email"
+                pInputText
+                formControlName="email"
+                placeholder="tu@correo.com"
+                class="custom-input"
+              />
+            </div>
+            <small class="error-message" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+              Ingresa un correo válido
+            </small>
+          </div>
+
+          <div class="form-field">
+            <label for="password">
+              <i class="pi pi-lock"></i>
+              Contraseña
+            </label>
+            <div class="input-wrapper">
+              <p-password
+                id="password"
+                formControlName="password"
+                placeholder="••••••••"
+                [feedback]="false"
+                [toggleMask]="true"
+                styleClass="custom-password"
+              ></p-password>
+            </div>
+            <small class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+              La contraseña debe tener al menos 6 caracteres
+            </small>
+          </div>
+
+          <button
+            pButton
+            type="submit"
+            class="login-btn"
+            [disabled]="loginForm.invalid || isLoading"
+          >
+            <i class="pi pi-spin pi-spinner" *ngIf="isLoading"></i>
+            <i class="pi pi-sign-in" *ngIf="!isLoading"></i>
+            <span>{{ isLoading ? 'Ingresando...' : 'Ingresar' }}</span>
+          </button>
+        </form>
+
+        <div class="login-footer">
+          <p>Sistema de gestión para</p>
+          <strong>El Rincón de los Perritos</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

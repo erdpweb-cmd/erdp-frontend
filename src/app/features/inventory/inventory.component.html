@@ -1,0 +1,156 @@
+<div class="inventory-container">
+  <div class="page-header">
+    <div>
+      <h1>Inventario</h1>
+      <p class="subtitle">Gestión de insumos y materiales</p>
+    </div>
+  </div>
+
+  <p-toolbar>
+    <ng-template #start>
+      <div class="toolbar-left">
+        <button pButton label="Nuevo Item" icon="pi pi-plus" (click)="openDialog()"></button>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="toolbar-right">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText [(ngModel)]="searchText" placeholder="Buscar..." (input)="onSearch()" />
+        </span>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <div class="inventory-table">
+    <p-table [value]="filteredItems" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25]"
+      [globalFilterFields]="['name', 'category', 'subcategory']">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+          <th pSortableColumn="category">Categoría <p-sortIcon field="category"></p-sortIcon></th>
+          <th>Subcategoría</th>
+          <th pSortableColumn="quantity">Cantidad <p-sortIcon field="quantity"></p-sortIcon></th>
+          <th>Unidad</th>
+          <th pSortableColumn="minStock">Stock Mín. <p-sortIcon field="minStock"></p-sortIcon></th>
+          <th pSortableColumn="costPerUnit">Costo Unit. <p-sortIcon field="costPerUnit"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>
+            <p-tag [value]="getCategoryLabel(item.category)" [severity]="getCategorySeverity(item.category)"></p-tag>
+          </td>
+          <td>{{ item.subcategory || '-' }}</td>
+          <td [ngClass]="getStockClass(item)">{{ item.quantity }}</td>
+          <td>{{ item.unit }}</td>
+          <td>{{ item.minStock }}</td>
+          <td>{{ item.costPerUnit | currency:'COP':'symbol':'1.0-0' }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text" (click)="editItem(item)"
+              pTooltip="Editar"></button>
+            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+              (click)="confirmDelete(item)" pTooltip="Eliminar"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center">No hay items en el inventario</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Dialog for Add/Edit -->
+  <p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{ width: '500px' }"
+    [header]="isEdit ? 'Editar Item' : 'Nuevo Item'">
+    <form (ngSubmit)="saveItem()" class="inventory-form">
+      <div class="form-group">
+        <label for="name">Nombre *</label>
+        <input id="name" name="name" pInputText [(ngModel)]="item.name" placeholder="Nombre del item" required />
+      </div>
+
+      <div class="form-group">
+        <label for="category">Categoría *</label>
+        <p-select id="category" name="category" [options]="categoryOptions" [(ngModel)]="item.category"
+          placeholder="Seleccionar categoría"></p-select>
+      </div>
+
+      <div class="form-group">
+        <label for="subcategory">Subcategoría</label>
+        <input id="subcategory" name="subcategory" pInputText [(ngModel)]="item.subcategory"
+          placeholder="Ej: Empaques, Alimentos, etc." />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="quantity">Cantidad *</label>
+          <p-inputNumber id="quantity" name="quantity" [(ngModel)]="item.quantity" [min]="0" required></p-inputNumber>
+        </div>
+
+        <div class="form-group">
+          <label for="unit">Unidad *</label>
+          <input id="unit" name="unit" pInputText [(ngModel)]="item.unit" placeholder="unidades, kg, litros, etc."
+            required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="minStock">Stock Mínimo *</label>
+          <p-inputNumber id="minStock" name="minStock" [(ngModel)]="item.minStock" [min]="0" required></p-inputNumber>
+        </div>
+
+        <div class="form-group">
+          <label for="costPerUnit">Costo Unitario *</label>
+          <p-inputNumber id="costPerUnit" name="costPerUnit" [(ngModel)]="item.costPerUnit" [min]="0" mode="currency"
+            currency="COP" required></p-inputNumber>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="barcode">Código de Barras</label>
+        <div class="barcode-input">
+          <input id="barcode" name="barcode" pInputText [(ngModel)]="item.barcode"
+            placeholder="Escanear o ingresar código" />
+          <button pButton icon="pi pi-qrcode" class="p-button-outlined" (click)="openScanner()"
+            type="button"></button>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button pButton type="button" label="Cancelar" class="p-button-text"
+          (click)="displayDialog = false"></button>
+        <button pButton type="submit" label="Guardar" [disabled]="!isFormValid()"></button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- Scanner Dialog -->
+  <p-dialog [(visible)]="scannerDialog" [modal]="true" [style]="{ width: '600px' }"
+    header="Escáner de Código de Barras">
+    <div class="scanner-container">
+      <video #videoElement autoplay playsinline></video>
+      <canvas #canvasElement></canvas>
+      <div class="scanner-overlay" *ngIf="!scanning">
+        <i class="pi pi-qrcode"></i>
+        <p>Haga clic en Iniciar Escaneo</p>
+      </div>
+      <div class="scanner-result" *ngIf="scannedCode">
+        <p>Código detectado: <strong>{{ scannedCode }}</strong></p>
+        <button pButton label="Usar este código" (click)="useScannedCode()"></button>
+      </div>
+    </div>
+    <div class="scanner-controls">
+      <button pButton [label]="scanning ? 'Detener' : 'Iniciar Escaneo'"
+        [icon]="scanning ? 'pi pi-stop' : 'pi pi-play'" (click)="toggleScanner()"></button>
+    </div>
+  </p-dialog>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>
+

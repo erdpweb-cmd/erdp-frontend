@@ -1,0 +1,210 @@
+<div class="promotions-container">
+  <div class="page-header">
+    <div>
+      <h1>Promociones y Cupones</h1>
+      <p class="subtitle">Gestión de ofertas especiales</p>
+    </div>
+  </div>
+
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">Promociones</p-tab>
+      <p-tab value="1">Cupones</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Promociones -->
+      <p-tabpanel value="0">
+        <p-toolbar>
+          <ng-template #start>
+            <div class="toolbar-left">
+              <button pButton label="Nueva Promoción" icon="pi pi-plus" (click)="openPromotionDialog()"></button>
+            </div>
+          </ng-template>
+          <ng-template #end>
+            <div class="toolbar-right">
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText [(ngModel)]="promoSearchText" placeholder="Buscar promoción..." />
+              </span>
+            </div>
+          </ng-template>
+        </p-toolbar>
+
+        <div class="promotions-table">
+          <p-table [value]="filteredPromotions" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Vigencia</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-promo>
+              <tr>
+                <td>{{ promo.name }}</td>
+                <td>
+                  <p-tag [value]="getPromoTypeLabel(promo.type)" [severity]="getPromoTypeSeverity(promo.type)"></p-tag>
+                </td>
+                <td>{{ promo.description }}</td>
+                <td>
+                  <span *ngIf="promo.isDaily">Diario</span>
+                  <span *ngIf="!promo.isDaily && promo.startDate && promo.endDate">
+                    {{ promo.startDate | date:'dd/MM' }} - {{ promo.endDate | date:'dd/MM' }}
+                  </span>
+                  <span *ngIf="!promo.isDaily && !promo.startDate">Sin fechas</span>
+                </td>
+                <td>
+                  <p-tag [value]="promo.isActive ? 'Activo' : 'Inactivo'"
+                         [severity]="promo.isActive ? 'success' : 'secondary'"></p-tag>
+                </td>
+                <td>
+                  <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text"
+                          (click)="editPromotion(promo)"></button>
+                  <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+                          (click)="confirmDeletePromotion(promo)"></button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center">No hay promociones registradas</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <!-- Cupones -->
+      <p-tabpanel value="1">
+        <p-toolbar>
+          <ng-template #start>
+            <div class="toolbar-left">
+              <button pButton label="Nuevo Cupón" icon="pi pi-plus" (click)="openCouponDialog()"></button>
+            </div>
+          </ng-template>
+        </p-toolbar>
+
+        <div class="coupons-table">
+          <p-table [value]="coupons" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Código</th>
+                <th>Descuento</th>
+                <th>Compra Mínima</th>
+                <th>Usos</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-coupon>
+              <tr>
+                <td><strong>{{ coupon.code }}</strong></td>
+                <td>
+                  <span *ngIf="coupon.discountType === 'percentage'">{{ coupon.discountValue }}%</span>
+                  <span *ngIf="coupon.discountType === 'fixed'">{{ coupon.discountValue | currency:'COP':'symbol':'1.0-0' }}</span>
+                </td>
+                <td>{{ coupon.minPurchase | currency:'COP':'symbol':'1.0-0' }}</td>
+                <td>{{ coupon.usedCount }} / {{ coupon.maxUses }}</td>
+                <td>
+                  <p-tag [value]="coupon.isActive ? 'Activo' : 'Inactivo'"
+                         [severity]="coupon.isActive ? 'success' : 'secondary'"></p-tag>
+                </td>
+                <td>
+                  <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text"
+                          (click)="editCoupon(coupon)"></button>
+                  <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+                          (click)="confirmDeleteCoupon(coupon)"></button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center">No hay cupones registrados</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+
+  <!-- Dialog Promoción -->
+  <p-dialog [(visible)]="promoDialog" [modal]="true" [style]="{ width: '600px' }"
+    [header]="isPromoEdit ? 'Editar Promoción' : 'Nueva Promoción'">
+    <form class="promo-form">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input pInputText [(ngModel)]="promotion.name" name="name" placeholder="Nombre de la promoción" />
+      </div>
+      <div class="form-group">
+        <label>Tipo *</label>
+        <p-select [options]="promotionTypes" [(ngModel)]="promotion.type" name="type" placeholder="Seleccionar tipo"></p-select>
+      </div>
+      <div class="form-group">
+        <label>Descripción *</label>
+        <textarea pTextarea [(ngModel)]="promotion.description" name="description" rows="3" placeholder="Descripción de la promoción"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Compra</label>
+          <p-inputNumber [(ngModel)]="promotion.buyQuantity" name="buyQuantity" [min]="1"></p-inputNumber>
+        </div>
+        <div class="form-group">
+          <label>Lleva</label>
+          <p-inputNumber [(ngModel)]="promotion.getQuantity" name="getQuantity" [min]="1"></p-inputNumber>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Productos aplicables</label>
+        <p-multiSelect [options]="productOptions" [(ngModel)]="promotion.applicableProductIds" name="products"
+          placeholder="Seleccionar productos"></p-multiSelect>
+      </div>
+      <div class="dialog-footer">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="promoDialog = false"></button>
+        <button pButton type="button" label="Guardar" (click)="savePromotion()" [disabled]="!isPromoFormValid()"></button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- Dialog Cupón -->
+  <p-dialog [(visible)]="couponDialog" [modal]="true" [style]="{ width: '500px' }"
+    [header]="isCouponEdit ? 'Editar Cupón' : 'Nuevo Cupón'">
+    <form class="coupon-form">
+      <div class="form-group">
+        <label>Código *</label>
+        <input pInputText [(ngModel)]="coupon.code" name="code" placeholder="Ej: DESCUENTO20" style="text-transform: uppercase;" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Descuento</label>
+          <p-select [options]="discountTypes" [(ngModel)]="coupon.discountType" name="discountType"></p-select>
+        </div>
+        <div class="form-group">
+          <label>Valor</label>
+          <p-inputNumber [(ngModel)]="coupon.discountValue" name="discountValue" [min]="0"></p-inputNumber>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Compra Mínima</label>
+          <p-inputNumber [(ngModel)]="coupon.minPurchase" name="minPurchase" [min]="0" mode="currency" currency="COP"></p-inputNumber>
+        </div>
+        <div class="form-group">
+          <label>Usos Máximos</label>
+          <p-inputNumber [(ngModel)]="coupon.maxUses" name="maxUses" [min]="1"></p-inputNumber>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="couponDialog = false"></button>
+        <button pButton type="button" label="Guardar" (click)="saveCoupon()" [disabled]="!isCouponFormValid()"></button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>
+

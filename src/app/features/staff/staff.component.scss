@@ -1,0 +1,117 @@
+@use 'variables' as *;
+
+.staff-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $chocolate;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: $gray;
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+  }
+}
+
+::ng-deep .p-toolbar {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: $radius-lg;
+  padding: 1rem;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.staff-table,
+.payments-table {
+  background: white;
+  border-radius: $radius-lg;
+  padding: 1rem;
+  box-shadow: $shadow-card;
+  margin-top: 1rem;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.avatar-placeholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.user-form,
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 500;
+    color: $chocolate;
+    font-size: 0.875rem;
+  }
+
+  input, ::ng-deep .p-select, ::ng-deep .p-inputnumber, ::ng-deep .p-inputmask {
+    width: 100%;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: $breakpoint-md) {
+  .toolbar-left,
+  .toolbar-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}

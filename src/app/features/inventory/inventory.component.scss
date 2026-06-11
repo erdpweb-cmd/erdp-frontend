@@ -1,0 +1,165 @@
+@use 'variables' as *;
+
+.inventory-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $chocolate;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: $gray;
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+  }
+}
+
+::ng-deep .p-toolbar {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: $radius-lg;
+  padding: 1rem;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.inventory-table {
+  background: white;
+  border-radius: $radius-lg;
+  padding: 1rem;
+  box-shadow: $shadow-card;
+  margin-top: 1rem;
+}
+
+.inventory-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 500;
+    color: $chocolate;
+    font-size: 0.875rem;
+  }
+
+  input, ::ng-deep .p-select, ::ng-deep .p-inputnumber {
+    width: 100%;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.barcode-input {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    flex: 1;
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.scanner-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: #000;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  video, canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.scanner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.7);
+
+  i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.scanner-result {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background: white;
+  padding: 1rem;
+  border-radius: $radius-md;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scanner-controls {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.stock-low {
+  color: $danger;
+  font-weight: 600;
+}
+
+.stock-normal {
+  color: $success;
+}
+
+@media (max-width: $breakpoint-md) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    flex-wrap: wrap;
+  }
+}
+

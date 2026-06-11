@@ -1,0 +1,232 @@
+<div class="reports-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1>Reportes</h1>
+      <p class="subtitle">Reportes detallados de ventas y egresos</p>
+    </div>
+  </div>
+
+  <div class="filters-card">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="period">Período</label>
+        <p-select
+          id="period"
+          [options]="periodOptions"
+          [(ngModel)]="selectedPeriod"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="Seleccionar período"
+        ></p-select>
+      </div>
+
+      <div class="filter-group" *ngIf="selectedPeriod === 'custom'">
+        <label for="startDate">Fecha Inicio</label>
+        <p-datepicker
+          id="startDate"
+          [(ngModel)]="startDate"
+          [ngModelOptions]="{standalone: true}"
+          [showIcon]="true"
+        ></p-datepicker>
+      </div>
+
+      <div class="filter-group" *ngIf="selectedPeriod === 'custom'">
+        <label for="endDate">Fecha Fin</label>
+        <p-datepicker
+          id="endDate"
+          [(ngModel)]="endDate"
+          [ngModelOptions]="{standalone: true}"
+          [showIcon]="true"
+        ></p-datepicker>
+      </div>
+
+      <div class="filter-actions">
+        <button
+          pButton
+          label="Generar Reporte"
+          icon="pi pi-refresh"
+          (click)="generateReport()"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Summary -->
+  <div class="stats-grid" *ngIf="reportData">
+    <div class="stat-card sales">
+      <div class="stat-icon">
+        <i class="pi pi-dollar"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Ventas</span>
+        <span class="stat-value">{{ reportData.totalSales | currency:'COP':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card expenses">
+      <div class="stat-icon">
+        <i class="pi pi-arrow-down"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Egresos</span>
+        <span class="stat-value">{{ reportData.totalExpenses | currency:'COP':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card balance">
+      <div class="stat-icon">
+        <i class="pi pi-wallet"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Balance</span>
+        <span class="stat-value">{{ reportData.balance | currency:'COP':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card orders">
+      <div class="stat-icon">
+        <i class="pi pi-shopping-cart"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Pedidos</span>
+        <span class="stat-value">{{ reportData.ordersCount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Sold -->
+  <div class="report-section" *ngIf="reportData">
+    <div class="section-header">
+      <h3>Productos Vendidos</h3>
+      <button
+        pButton
+        label="Exportar"
+        icon="pi pi-download"
+        class="p-button-outlined p-button-sm"
+        (click)="exportReport('products')"
+      ></button>
+    </div>
+    <div class="report-table">
+      <p-table
+        [value]="reportData.productsSold"
+        [paginator]="true"
+        [rows]="10"
+        responsiveLayout="scroll"
+      >
+        <ng-template #header>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Ingresos</th>
+            <th>% del Total</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-item>
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.revenue | currency:'COP':'symbol':'1.0-0' }}</td>
+            <td>
+              <div class="percentage-bar">
+                <div
+                  class="percentage-fill"
+                  [style.width.%]="getPercentage(item.revenue)"
+                ></div>
+                <span>{{ getPercentage(item.revenue) }}%</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Promotions Applied -->
+  <div class="report-section" *ngIf="reportData && reportData.promotionsApplied.length > 0">
+    <div class="section-header">
+      <h3>Promociones Aplicadas</h3>
+    </div>
+    <div class="report-table">
+      <p-table
+        [value]="reportData.promotionsApplied"
+        responsiveLayout="scroll"
+      >
+        <ng-template #header>
+          <tr>
+            <th>Promoción</th>
+            <th>Veces Aplicada</th>
+            <th>Descuento Total</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-item>
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.count }}</td>
+            <td>{{ item.discount | currency:'COP':'symbol':'1.0-0' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Coupons Applied -->
+  <div class="report-section" *ngIf="reportData && reportData.couponsApplied.length > 0">
+    <div class="section-header">
+      <h3>Cupones Aplicados</h3>
+    </div>
+    <div class="report-table">
+      <p-table
+        [value]="reportData.couponsApplied"
+        responsiveLayout="scroll"
+      >
+        <ng-template #header>
+          <tr>
+            <th>Código</th>
+            <th>Veces Usado</th>
+            <th>Descuento Total</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-item>
+          <tr>
+            <td><strong>{{ item.code }}</strong></td>
+            <td>{{ item.count }}</td>
+            <td>{{ item.discount | currency:'COP':'symbol':'1.0-0' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Promo Cost -->
+  <div class="report-section" *ngIf="reportData && reportData.promoCost > 0">
+    <div class="section-header">
+      <h3>Inversión en Promociones</h3>
+    </div>
+    <div class="promo-cost-card">
+      <div class="cost-item">
+        <span>Valor invertido en promociones (costo de producción):</span>
+        <strong class="cost-value">{{ reportData.promoCost | currency:'COP':'symbol':'1.0-0' }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-section" *ngIf="reportData">
+    <button
+      pButton
+      label="Imprimir Reporte"
+      icon="pi pi-print"
+      class="p-button-info"
+      (click)="printReport()"
+    ></button>
+    <button
+      pButton
+      label="Enviar por WhatsApp"
+      icon="pi pi-whatsapp"
+      class="p-button-success"
+      (click)="sendWhatsApp()"
+    ></button>
+  </div>
+
+  <p-toast></p-toast>
+</div>
+

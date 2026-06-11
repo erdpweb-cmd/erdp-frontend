@@ -1,0 +1,56 @@
+<div class="kitchen-container">
+  <div class="kitchen-header">
+    <div class="header-left">
+      <h1>Panel de Cocina</h1>
+      <p class="subtitle">Pedidos pendientes y en preparación</p>
+    </div>
+    <div class="header-right">
+      <p-tag [value]="orders.length + ' pedidos'" severity="info"></p-tag>
+    </div>
+  </div>
+
+  <div class="orders-grid" *ngIf="orders.length > 0">
+    <div class="order-card" *ngFor="let order of orders" [ngClass]="getTimeClass(order.createdAt)">
+      <div class="order-header">
+        <div class="order-number">
+          <span class="number">#{{ order.orderNumber }}</span>
+          <p-tag [value]="order.status === 'pending' ? 'Pendiente' : 'Preparando'"
+                 [severity]="order.status === 'pending' ? 'warn' : 'info'"></p-tag>
+        </div>
+        <div class="order-time">
+          <i class="pi pi-clock"></i>
+          <span>{{ getWaitTime(order.createdAt) }}</span>
+        </div>
+      </div>
+
+      <p-progressBar [value]="getProgressValue(order.createdAt)" [showValue]="false"
+                     [style]="{'height': '4px'}"></p-progressBar>
+
+      <div class="order-customer" *ngIf="order.customerName">
+        <i class="pi pi-user"></i>
+        <span>{{ order.customerName }}</span>
+      </div>
+
+      <div class="order-items">
+        <div class="item" *ngFor="let item of order.items">
+          <span class="item-qty">{{ item.quantity }}x</span>
+          <span class="item-name">{{ item.productName }}</span>
+        </div>
+      </div>
+
+      <div class="order-actions">
+        <button pButton label="Despachar" icon="pi pi-check" class="p-button-success"
+          (click)="dispatchOrder(order)" pTooltip="Marcar como listo"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="orders.length === 0">
+    <i class="pi pi-inbox"></i>
+    <h3>No hay pedidos pendientes</h3>
+    <p>Los nuevos pedidos aparecerán aquí automáticamente</p>
+  </div>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>

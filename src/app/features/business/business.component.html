@@ -1,0 +1,183 @@
+<div class="business-container">
+  <div class="page-header">
+    <div>
+      <h1>Gestión del Negocio</h1>
+      <p class="subtitle">Configuración de turnos y apertura de día</p>
+    </div>
+    <!-- Botón Cerrar Día visible cuando el día está abierto -->
+    <button
+      *ngIf="currentShift?.isOpen"
+      pButton
+      label="Cerrar Día"
+      icon="pi pi-power-off"
+      class="p-button-danger"
+      (click)="confirmCloseDay()"
+    ></button>
+  </div>
+
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">Configurar Turnos</p-tab>
+      <p-tab value="1">Abrir Día</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Configurar Turnos -->
+      <p-tabpanel value="0">
+        <div class="shifts-config">
+          <div class="config-card">
+            <h3>Asignar Personal a Turnos</h3>
+            <p class="description">
+              Define quién estará a cargo de recepción y cocina para el día de hoy.
+              Esta información se usará para registrar quién solicita y despacha cada pedido.
+            </p>
+
+            <form (ngSubmit)="saveShifts()" class="shifts-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="reception">Recepcionista</label>
+                  <p-select
+                    id="reception"
+                    [options]="userOptions"
+                    [(ngModel)]="selectedReceptionId"
+                    name="receptionId"
+                    placeholder="Seleccionar recepcionista"
+                    [showClear]="true"
+                  ></p-select>
+                </div>
+
+                <div class="form-group">
+                  <label for="kitchen">Cocina</label>
+                  <p-select
+                    id="kitchen"
+                    [options]="userOptions"
+                    [(ngModel)]="selectedKitchenId"
+                    name="kitchenId"
+                    placeholder="Seleccionar cocinero"
+                    [showClear]="true"
+                  ></p-select>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  pButton
+                  type="submit"
+                  label="Guardar Turnos"
+                  icon="pi pi-save"
+                  [disabled]="!selectedReceptionId || !selectedKitchenId"
+                ></button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Current Shift Info -->
+          <div class="current-shift" *ngIf="currentShift">
+            <h3>Turno Actual</h3>
+            <div class="shift-info-grid">
+              <div class="shift-info-item">
+                <span class="label">Recepcionista:</span>
+                <span class="value">{{ currentShift.receptionUserName }}</span>
+              </div>
+              <div class="shift-info-item">
+                <span class="label">Cocina:</span>
+                <span class="value">{{ currentShift.kitchenUserName }}</span>
+              </div>
+              <div class="shift-info-item">
+                <span class="label">Iniciado:</span>
+                <span class="value">{{ currentShift.openedAt | date:'short' }}</span>
+              </div>
+              <div class="shift-info-item">
+                <span class="label">Estado:</span>
+                <span class="badge" [ngClass]="currentShift.isOpen ? 'badge-success' : 'badge-secondary'">
+                  {{ currentShift.isOpen ? 'Abierto' : 'Cerrado' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-tabpanel>
+
+      <!-- Abrir Día -->
+      <p-tabpanel value="1">
+        <div class="open-day">
+          <div class="open-day-card" *ngIf="!currentShift?.isOpen">
+            <div class="icon-container open">
+              <i class="pi pi-calendar-plus"></i>
+            </div>
+            <h3>Iniciar Día Laboral</h3>
+            <p class="description">
+              Al abrir el día, se iniciará la jornada laboral. Dependiendo de tu turno asignado,
+              serás dirigido automáticamente al panel correspondiente (Cocina o Recepción).
+            </p>
+
+            <div class="shift-summary" *ngIf="currentShift">
+              <h4>Tu turno asignado:</h4>
+              <div class="shift-role">
+                <i class="pi" [ngClass]="userRoleIcon"></i>
+                <span>{{ userRoleText }}</span>
+              </div>
+            </div>
+
+            <button
+              pButton
+              label="Abrir Día"
+              icon="pi pi-play"
+              class="p-button-lg p-button-success"
+              (click)="openDay()"
+              [disabled]="isLoading || !selectedReceptionId || !selectedKitchenId"
+            ></button>
+          </div>
+
+          <!-- Mostrar info cuando el día ya está abierto -->
+          <div class="open-day-card" *ngIf="currentShift?.isOpen">
+            <div class="icon-container active">
+              <i class="pi pi-check-circle"></i>
+            </div>
+            <h3>Día Laboral Activo</h3>
+            <p class="description">
+              El día laboral está en curso. Puedes dirigirte a tu panel de trabajo o cerrar el día cuando termine la jornada.
+            </p>
+
+            <div class="shift-summary">
+              <h4>Información del turno:</h4>
+              <div class="shift-details">
+                <div class="detail-item">
+                  <i class="pi pi-desktop"></i>
+                  <span>Recepción: <strong>{{ currentShift?.receptionUserName }}</strong></span>
+                </div>
+                <div class="detail-item">
+                  <i class="pi pi-fire"></i>
+                  <span>Cocina: <strong>{{ currentShift?.kitchenUserName }}</strong></span>
+                </div>
+                <div class="detail-item">
+                  <i class="pi pi-clock"></i>
+                  <span>Abierto: <strong>{{ currentShift?.openedAt | date:'HH:mm' }}</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button
+                pButton
+                label="Ir a mi Panel"
+                icon="pi pi-arrow-right"
+                class="p-button-lg p-button-info"
+                (click)="goToMyPanel()"
+              ></button>
+              <button
+                pButton
+                label="Cerrar Día"
+                icon="pi pi-power-off"
+                class="p-button-lg p-button-danger p-button-outlined"
+                (click)="confirmCloseDay()"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+
+  <p-confirmDialog></p-confirmDialog>
+</div>
+

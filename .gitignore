@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Angular build output
+dist/
+.angular/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files (optional - uncomment if you want to exclude)
+# src/environments/environment.ts
+# src/environments/environment.prod.ts
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+
+# Temporary files
+tmp/
+.tmp/
+
+# Firebase
+.firebase/
+firebase-debug.log

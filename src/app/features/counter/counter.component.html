@@ -1,0 +1,125 @@
+<div class="counter-container">
+  <div class="counter-header">
+    <div class="header-left">
+      <h1>Barra / Recepción</h1>
+      <p class="subtitle">Toma de pedidos</p>
+    </div>
+    <div class="header-right">
+      <button pButton label="Nuevo Pedido" icon="pi pi-plus" (click)="newOrder()"></button>
+    </div>
+  </div>
+
+  <div class="counter-layout">
+    <!-- Products Panel -->
+    <div class="products-panel">
+      <div class="panel-header">
+        <h3>Productos</h3>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText [(ngModel)]="productSearchText" placeholder="Buscar producto..." (input)="filterProducts()" />
+        </span>
+      </div>
+
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of filteredProducts" (click)="selectProduct(product)">
+          <div class="product-icon">
+            <i class="pi" [ngClass]="product.type === 'bebida' ? 'pi-glass-martini' : 'pi-box'"></i>
+          </div>
+          <div class="product-info">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-price">{{ product.publicPrice | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Panel -->
+    <div class="order-panel">
+      <div class="panel-header">
+        <h3>Pedido Actual</h3>
+        <span class="items-count" *ngIf="orderItems.length > 0">{{ orderItems.length }} items</span>
+      </div>
+
+      <div class="customer-info">
+        <label>Cliente:</label>
+        <input pInputText [(ngModel)]="customerName" placeholder="Nombre del cliente (opcional)" />
+      </div>
+
+      <div class="order-items" *ngIf="orderItems.length > 0">
+        <div class="order-item" *ngFor="let item of orderItems; let i = index">
+          <div class="item-info">
+            <span class="item-name">{{ item.productName }}</span>
+            <span class="item-price">{{ item.unitPrice | currency:'COP':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="item-actions">
+            <p-inputNumber [(ngModel)]="item.quantity" [min]="1" [showButtons]="true" buttonLayout="horizontal"
+              spinnerMode="horizontal" (onInput)="updateItemTotal(item)" [inputStyle]="{'width': '50px'}">
+            </p-inputNumber>
+            <span class="item-subtotal">{{ item.subtotal | currency:'COP':'symbol':'1.0-0' }}</span>
+            <button pButton icon="pi pi-trash" class="p-button-danger p-button-text" (click)="removeItem(i)"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-order" *ngIf="orderItems.length === 0">
+        <i class="pi pi-shopping-cart"></i>
+        <p>Selecciona productos para agregar al pedido</p>
+      </div>
+
+      <!-- Coupon Section -->
+      <div class="coupon-section" *ngIf="orderItems.length > 0">
+        <div class="coupon-input">
+          <input pInputText [(ngModel)]="couponCode" placeholder="Código de cupón" />
+          <button pButton label="Aplicar" class="p-button-outlined" (click)="applyCoupon()"></button>
+        </div>
+        <div class="applied-coupon" *ngIf="appliedCoupon">
+          <span>{{ appliedCoupon.code }}: -{{ appliedCoupon.discountAmount | currency:'COP':'symbol':'1.0-0' }}</span>
+          <button pButton icon="pi pi-times" class="p-button-text p-button-sm" (click)="removeCoupon()"></button>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary" *ngIf="orderItems.length > 0">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>{{ orderSubtotal | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="summary-row discount" *ngIf="promoDiscount > 0">
+          <span>Descuento promoción:</span>
+          <span>-{{ promoDiscount | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="summary-row discount" *ngIf="couponDiscount > 0">
+          <span>Descuento cupón:</span>
+          <span>-{{ couponDiscount | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>{{ orderTotal | currency:'COP':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="payment-section" *ngIf="orderItems.length > 0">
+        <label>Método de pago:</label>
+        <div class="payment-methods">
+          <button pButton [label]="'Efectivo'" [class]="paymentMethod === 'cash' ? '' : 'p-button-outlined'"
+            (click)="paymentMethod = 'cash'" icon="pi pi-money-bill"></button>
+          <button pButton [label]="'Tarjeta'" [class]="paymentMethod === 'card' ? '' : 'p-button-outlined'"
+            (click)="paymentMethod = 'card'" icon="pi pi-credit-card"></button>
+          <button pButton [label]="'Transferencia'" [class]="paymentMethod === 'transfer' ? '' : 'p-button-outlined'"
+            (click)="paymentMethod = 'transfer'" icon="pi pi-send"></button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="order-actions" *ngIf="orderItems.length > 0">
+        <button pButton label="Cancelar" class="p-button-danger p-button-outlined" icon="pi pi-times"
+          (click)="cancelOrder()"></button>
+        <button pButton label="Enviar a Cocina" icon="pi pi-send" (click)="createOrder()"></button>
+      </div>
+    </div>
+  </div>
+
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>

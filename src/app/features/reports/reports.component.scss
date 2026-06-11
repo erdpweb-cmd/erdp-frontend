@@ -1,0 +1,210 @@
+@use 'variables' as *;
+
+.reports-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $chocolate;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: $gray;
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+  }
+}
+
+.filters-card {
+  background: white;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  box-shadow: $shadow-card;
+  margin-bottom: 2rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 500;
+    color: $chocolate;
+    font-size: 0.875rem;
+  }
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: $radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.stat-card.sales .stat-icon {
+  background: #dbeafe;
+  color: $primary;
+}
+
+.stat-card.expenses .stat-icon {
+  background: #fee2e2;
+  color: $danger;
+}
+
+.stat-card.balance .stat-icon {
+  background: #d1fae5;
+  color: $success;
+}
+
+.stat-card.orders .stat-icon {
+  background: #fef3c7;
+  color: $warning;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.875rem;
+  color: $gray;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $chocolate;
+}
+
+.report-section {
+  background: white;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  box-shadow: $shadow-card;
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $chocolate;
+    margin: 0;
+  }
+}
+
+.report-table {
+  overflow-x: auto;
+}
+
+.percentage-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.percentage-fill {
+  height: 8px;
+  background: $primary;
+  border-radius: 4px;
+  min-width: 20px;
+}
+
+.percentage-bar span {
+  font-size: 0.75rem;
+  color: $gray;
+  min-width: 40px;
+}
+
+.promo-cost-card {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: $radius-md;
+  padding: 1rem;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    color: #92400e;
+  }
+}
+
+.cost-value {
+  font-size: 1.25rem;
+  color: #b45309;
+}
+
+.actions-section {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+@media (max-width: $breakpoint-md) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-section {
+    flex-direction: column;
+  }
+}
+
